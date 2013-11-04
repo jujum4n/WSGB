@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<title>JSGB for Google Glass: A JavaScript Gameboy emulator running on Google Glass via Wearscript</title>
+<!--
+
+ JSGB v0.02 - a JavaScript Nintendo GameBoy Emulator
+ Copyright (C) 2009 Pedro Ladaria <Sonic1980 at Gmail dot com>
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ version 2 as published by the Free Software Foundation.
+ The full license is available at http://www.gnu.org/licenses/gpl.html
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+-->
+<script src="toolbox.js" type="application/x-javascript"></script>
+<script src="scrollbar.js" type="application/x-javascript"></script>
+<script src="jsgb.cpu.js" type="application/x-javascript"></script>
+<script src="jsgb.memory.js" type="application/x-javascript"></script>
+<script src="jsgb.rom.js" type="application/x-javascript"></script>
+<script src="jsgb.interrupts.js" type="application/x-javascript"></script>
+<script src="jsgb.input.js" type="application/x-javascript"></script>
+<script src="jsgb.lcd.js" type="application/x-javascript"></script>
+<script src="jsgb.timers.js" type="application/x-javascript"></script>
+<script src="jsgb.debugger.js" type="application/x-javascript"></script>
+<script src="jsgb.gameboy.js" type="application/x-javascript"></script>
+<link href="jsgb.styles.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="favicon.gif" />
+</head>
+<body align="left" style="background-color:black;">
+<div>
+<div align="center"style="background-color:black; height:360px;width:640px;">
+<canvas align="center" id="LCD" width="160" height="144"></canvas>
+
+<div style="color:white" id="STATUS">Pause</div>
+<font color="white" size="2">
+    Porting by: Justin "jujuman" Chase&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    <a color="white" align="right" href="http://sourceforge.net/projects/jsgbemu/">Official JSGB</a> - JSGB source @ <a href="https://github.com/Two9A/jsGB">GitHub</a> <br>
+	<a color="white" align="right" href="http://wearscript.com/">Wearscript</a>
+    </font>
+</div>
+<div id="DEBUG">&nbsp;</div>
+
+<select style="display:none"id="CARTRIDGE" rows="1" onload="gb_Insert_Cartridge(this.value,true);">
+<option style="display:none"value="smb.gb"></option>
+</select><br/>
+
+<input  style="display:none" id="BR" type="button" value="Run"   onfocus="this.blur();" onclick="gb_Run();"/>
+<input style="display:none" id="BP" type="button" value="Pause" onfocus="this.blur();" disabled onclick="gb_Pause();"/>
+<input style="display:none"id="BS" type="button" value="Step"  onfocus="this.blur();" onclick="gb_Step();"/>
+<input style="display:none" id="BS" type="button" value="Reset"  onfocus="this.blur();" onclick="gb_Insert_Cartridge($('CARTRIDGE').value,true);"/>
+<input style="display:none" id="BX" type="button" value="Size x2" onfocus="this.blur();" onclick="gb_Resize_LCD();"/>
+<br/>
+
+<input   style="display:none"id="TOGGLE_DEBUGGER" type="checkbox" onclick="gb_Toggle_Debugger(this.checked);" />
+
+</div>
+
+<div  style="display:none"id="DEBUGGER">
+</div>
+
+<div style="display:none" id="FOOTER" class="CLR C">
+<div  style="display:none"class="IB L">
+<strong>X</strong>: Button A<br/>
+<strong>Z</strong>: Button B<br/>
+<strong>A</strong>: Start<br/>
+<strong>S</strong>: Select<br/>
+<strong>&larr; &uarr; &rarr; &darr;</strong>
+</div>
+<br/>
+<br/>
+
+
+<script type="application/x-javascript">
+
+var gbSeconds = 0;
+var gbFrames  = 0;
+
+function gb_Resize_LCD() {
+    $('BX').value='Size x2';
+    $('LCD').style.width='400px';
+    $('LCD').style.height='360px';
+}
+
+function gb_Show_Fps() {
+  gbFrames+=gbFPS;
+  gbSeconds++;
+  $('STATUS').innerHTML = 
+    gbFPS+
+    ' fps';
+  gbFPS=0;
+  gbBankSwitchCount=0;
+}
+
+function gb_Toggle_Debugger(show) {
+  $('DEBUGGER').style.height=(show)?'auto':'0px';
+}
+
+window.onload = function() {
+  gb_Insert_Cartridge($('CARTRIDGE').value, false);
+  gb_Toggle_Debugger($('TOGGLE_DEBUGGER').checked);
+  gb_Resize_LCD();
+  gb_Run();
+}
+
+</script>
+
+</body>
+</html>
